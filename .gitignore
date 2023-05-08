@@ -1,7 +1,16 @@
+### Project ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/src/main/resources/
+/src/main/java/events/FishingEvent.java
+HELP.md
+
+### Maven ###
+.mvn
+mvnw
+mvnw.cmd
 
 ### IntelliJ IDEA ###
 .idea
@@ -30,7 +39,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-### Project ###
-/src/main/resources/
-/src/main/java/events/FishingEvent.java
