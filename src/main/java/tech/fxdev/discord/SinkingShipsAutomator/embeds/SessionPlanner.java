@@ -11,6 +11,7 @@ import java.time.ZoneOffset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.awt.*;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -47,11 +48,18 @@ public class SessionPlanner extends ListenerAdapter {
         String gameCode = message[1].toLowerCase();
         GameInfo gameInfo = GAMES.getOrDefault(gameCode, new GameInfo(EB_GAME_DEFAULT, EB_BANNER_DEFAULT, EB_COLOR_DEFAULT));
 
-        // Retrieving time by parsing hours and minutes in user message
-        LocalTime time = LocalTime.parse(message[2], DateTimeFormatter.ofPattern("HH:mm"));
-        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(), time);
-        long unixTime = localDateTime.toEpochSecond(ZoneOffset.UTC);
-        String formattedTime = "<t:" + unixTime + ">";
+        String formattedTime = "";
+        try {
+            // Retrieving time by parsing hours and minutes in user message
+            LocalTime time = LocalTime.parse(message[2], DateTimeFormatter.ofPattern("HH:mm"));
+            LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(), time);
+            long unixTime = localDateTime.toEpochSecond(ZoneOffset.UTC);
+            formattedTime = "<t:" + unixTime + ">";
+        } catch (DateTimeParseException e) {
+            event.getMessage().delete().queue();
+            return;
+        }
+
 
         // Building embed
         EmbedBuilder eb = new EmbedBuilder()
