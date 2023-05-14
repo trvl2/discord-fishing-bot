@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import tech.fxdev.discord.SinkingShipsAutomator.core.PropertyReader;
+import tech.fxdev.discord.SinkingShipsAutomator.embeds.SessionPlanner;
 import tech.fxdev.discord.SinkingShipsAutomator.events.CatchingEvent;
 
 public class Server {
@@ -21,7 +22,8 @@ public class Server {
                     .setActivity(Activity.watching("you sinking"))
                     .build();
 
-            server.addEventListener(new CatchingEvent());
+            // server.addEventListener(new CatchingEvent());
+            server.addEventListener(new SessionPlanner());
 
         } catch(Exception e) {
             System.out.println("Error occurred. See logs for details. Shutting down...");
