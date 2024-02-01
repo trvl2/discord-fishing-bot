@@ -1,34 +1,34 @@
 package tech.fxdev.discord.SinkingShipsAutomator.server;
 
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import tech.fxdev.discord.SinkingShipsAutomator.core.PropertyReader;
-import tech.fxdev.discord.SinkingShipsAutomator.embeds.SessionPlanner;
-import tech.fxdev.discord.SinkingShipsAutomator.threads.ThreadCreator;
+import net.dv8tion.jda.api.hooks.EventListener;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
+@Slf4j
+@Configuration
 public class Server {
 
-    private JDA server;
-
-    public Server() {
+    @Bean(destroyMethod = "shutdown")
+    public JDA jda(List<EventListener> listenerList, ServerConfiguration serverConfiguration) {
 
         try {
-            PropertyReader pr = new PropertyReader();
-
-            server = JDABuilder.createDefault(pr.getProperty("discord.token"))
-                    .enableIntents(GatewayIntent.MESSAGE_CONTENT)
-                    .setActivity(Activity.watching("you sinking"))
+            JDA server = JDABuilder.createDefault(serverConfiguration.getServerToken())
+                    .enableIntents(serverConfiguration.getIntents())
+                    .setActivity(Activity.watching(serverConfiguration.getActivityContent()))
                     .build();
 
-            server.addEventListener(new SessionPlanner());
-            server.addEventListener(new ThreadCreator(pr.getProperty("discord.channel.art")));
+            listenerList.forEach(server::addEventListener);
 
-        } catch(Exception e) {
-            System.out.println("Error occurred. See logs for details. Shutting down...");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            return server;
+        } catch (Exception e) {
+            log.error("Error occurred. See logs for details. Shutting down...");
+            throw new RuntimeException(e);
         }
     }
 }
